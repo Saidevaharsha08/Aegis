@@ -1,0 +1,102 @@
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+.env.*.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.cover
+.hypothesis/
+venv/
+.venv/
+env/
+ENV/
+
+# Data files — too large for git, download via script
+data/*.csv
+data/*.pcap
+data/*.parquet
+data/*.zip
+data/*.tar.gz
+!data/.gitkeep
+!data/README.md
+
+# Trained model artifacts — version with DVC or MLflow instead
+models/*.pkl
+models/*.joblib
+models/*.pt
+models/*.onnx
+models/*.json
+!models/.gitkeep
+
+# Crypto key material — NEVER commit private keys
+*.pem
+*.key
+*.p12
+*.pfx
+keys/
+certs/
+*.der
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+frontend/.next/
+frontend/node_modules/
+frontend/out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+.docker/
+
+# Logs
+*.log
+logs/
+*.pid
+
+# MLflow artifacts
+mlruns/
+mlartifacts/
+
+# DVC
+.dvc/tmp/
+.dvc/cache/
