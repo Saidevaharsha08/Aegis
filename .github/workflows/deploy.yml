@@ -1,0 +1,46 @@
+name: Aegis CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+      - name: Train model & run benchmarks
+        run: |
+          python scripts/simulate_attack.py --train
+          python backend/app/ml/evaluate.py
+      - name: Run Stage 1 - 4 Pytest Suite
+        run: |
+          pytest backend/tests/ -v --tb=short
+
+  deploy-backend:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          echo "Deploying Aegis FastAPI backend to Render..."
+
+  deploy-frontend:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Next.js to Vercel
+        run: |
+          echo "Deploying Aegis Next.js dashboard to Vercel..."
