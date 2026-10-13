@@ -3,8 +3,12 @@ import os
 import joblib
 import numpy as np
 import pandas as pd
-import shap
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
+try:
+    import shap
+except Exception as _shap_err:
+    shap = None
+    print(f"[!] Optional shap module not loaded ({_shap_err}); fallback explainer active.")
 from pydantic import BaseModel, Field
 
 from app.config import settings
@@ -217,8 +221,14 @@ class AegisIDSDetector:
         self.pipeline = joblib.load(self.scaler_path)
         self.feature_names = self.pipeline.named_steps["preprocessor"].feature_names_
         
-        # Initialize SHAP TreeExplainer
-        self.explainer = shap.TreeExplainer(self.model)
+        # Initialize SHAP TreeExplainer if available
+        if shap is not None:
+            try:
+                self.explainer = shap.TreeExplainer(self.model)
+            except Exception:
+                self.explainer = None
+        else:
+            self.explainer = None
         
         # Warmup model and SHAP explainer to prevent cold-start latency spikes
         try:
@@ -226,7 +236,8 @@ class AegisIDSDetector:
             dummy_trans = self.pipeline.transform(dummy_raw)
             dummy_df = pd.DataFrame(dummy_trans, columns=self.feature_names)
             _ = self.model.predict_proba(dummy_df)
-            _ = self.explainer.shap_values(dummy_df)
+            if self.explainer is not None:
+                _ = self.explainer.shap_values(dummy_df)
         except Exception:
             pass
 
@@ -270,6 +281,8 @@ class AegisIDSDetector:
         
         # Compute SHAP explanation
         try:
+            if self.explainer is None:
+                raise ValueError("SHAP explainer uninitialized")
             shap_vals = self.explainer.shap_values(X_df)
             if isinstance(shap_vals, list):
                 shap_vec = shap_vals[1][0] if len(shap_vals) > 1 else shap_vals[0][0]

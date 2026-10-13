@@ -36,5 +36,27 @@ services:
     ports:
       - "6379:6379"
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: [ "python", "ingest_worker.py" ]
+    depends_on:
+      - redis
+      - backend
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+
 volumes:
   postgres_data:

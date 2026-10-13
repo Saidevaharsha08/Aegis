@@ -14,7 +14,18 @@ sys.path.insert(0, str(project_root))
 sys.path.insert(0, str(project_root / "backend"))
 
 from app.config import settings
-from scripts.simulate_attack import generate_synthetic_cicids
+try:
+    from scripts.simulate_attack import generate_synthetic_cicids
+except ModuleNotFoundError:
+    from app.ml.features import RAW_CICIDS_FEATURES
+    def generate_synthetic_cicids(n_samples: int = 5000, seed: int = 42) -> pd.DataFrame:
+        np.random.seed(seed)
+        records = []
+        for _ in range(n_samples):
+            rec = {feat: float(np.random.exponential(100.0)) for feat in RAW_CICIDS_FEATURES}
+            rec["Label"] = "BENIGN" if np.random.rand() > 0.2 else "DoS"
+            records.append(rec)
+        return pd.DataFrame(records)
 
 def run_benchmark_evaluation(n_eval_samples: int = 2000) -> Dict[str, Any]:
     """

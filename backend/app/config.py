@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -32,6 +33,10 @@ class Settings(BaseSettings):
     # API Settings
     BACKEND_HOST: str = "0.0.0.0"
     BACKEND_PORT: int = 8000
+    # Optional API key to protect detection endpoint
+    DETECT_API_KEY: Optional[str] = None
+    # Rate limit (per key or per IP) allowed requests per minute for /api/detect
+    RATE_LIMIT_PER_MINUTE: int = 60
 
     model_config = SettingsConfigDict(
         env_file=".env",

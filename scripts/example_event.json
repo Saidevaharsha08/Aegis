@@ -1,0 +1,17 @@
+{
+    "features": {
+        "duration": 12.4,
+        "src_bytes": 234,
+        "dst_bytes": 0,
+        "protocol_type": "tcp",
+        "service": "http",
+        "flag": "SF",
+        "count": 3,
+        "same_srv_rate": 0.0
+    },
+    "meta": {
+        "source": "device-forwarder",
+        "host": "laptop-friend.local",
+        "timestamp": "2026-08-18T12:00:00Z"
+    }
+}
